@@ -61,12 +61,17 @@ RUN useradd -m -s /bin/bash sandbox \
     && mkdir -p /home/sandbox/workspace \
     && chown -R sandbox:sandbox /home/sandbox
 
+
 COPY start.sh /start.sh
-RUN chmod 755 /start.sh
+
+# Normalize Windows line endings and remove UTF-8 BOM
+RUN python3 -c "p='/start.sh'; b=open(p,'rb').read(); b=b.removeprefix(b'\xef\xbb\xbf').replace(b'\r\n',b'\n').replace(b'\r',b'\n'); open(p,'wb').write(b)" \
+    && chmod 755 /start.sh
 
 USER sandbox
 WORKDIR /home/sandbox/workspace
 
 EXPOSE 10000
 
-CMD ["/start.sh"]
+# Explicitly run the script using Bash
+CMD ["bash", "/start.sh"]
