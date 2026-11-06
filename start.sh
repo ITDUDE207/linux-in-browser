@@ -7,13 +7,13 @@ if [ -z "$TERMINAL_USER" ] || [ -z "$TERMINAL_PASSWORD" ]; then
     exit 1
 fi
 
-echo "Starting Linux browser terminal..."
-echo "Working directory: /home/sandbox/workspace"
+echo "Starting shared Linux terminal..."
+echo "All connected users share this environment."
 
 exec /usr/local/bin/ttyd \
     --writable \
     --port "${PORT:-10000}" \
     --interface 0.0.0.0 \
     --credential "${TERMINAL_USER}:${TERMINAL_PASSWORD}" \
-    --max-clients 1 \
+    --max-clients 20 \
     -- bash --login
