@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: linux-sandbox
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    envVars:
+      - key: TERMINAL_USER
+        sync: false
+      - key: TERMINAL_PASSWORD
+        sync: false
