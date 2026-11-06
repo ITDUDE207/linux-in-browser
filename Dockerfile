@@ -68,7 +68,7 @@ COPY start.sh /start.sh
 RUN python3 -c "p='/start.sh'; b=open(p,'rb').read(); b=b.removeprefix(b'\xef\xbb\xbf').replace(b'\r\n',b'\n').replace(b'\r',b'\n'); open(p,'wb').write(b)" \
     && chmod 755 /start.sh
 
-USER sandbox
+USER root
 WORKDIR /home/sandbox/workspace
 
 EXPOSE 10000
