@@ -1,3 +1,4 @@
+
 FROM ubuntu:24.04
 
 ARG TARGETARCH
@@ -7,9 +8,10 @@ ENV PORT=10000
 ENV HOME=/home/sandbox
 ENV PATH="/usr/local/bin:${PATH}"
 
-# Install Linux programming tools
+# Install Linux programming tools and sudo
 RUN apt-get update && apt-get install -y \
     bash \
+    sudo \
     ca-certificates \
     curl \
     wget \
@@ -56,22 +58,24 @@ RUN set -eux; \
     echo "${TTYD_SHA}  /usr/local/bin/ttyd" | sha256sum -c -; \
     chmod +x /usr/local/bin/ttyd
 
-# Create an unprivileged Linux user
+# Create sandbox user with passwordless sudo
 RUN useradd -m -s /bin/bash sandbox \
+    && usermod -aG sudo sandbox \
+    && printf 'sandbox ALL=(ALL:ALL) NOPASSWD:ALL\n' > /etc/sudoers.d/sandbox \
+    && chmod 0440 /etc/sudoers.d/sandbox \
+    && visudo -cf /etc/sudoers.d/sandbox \
     && mkdir -p /home/sandbox/workspace \
     && chown -R sandbox:sandbox /home/sandbox
 
-
 COPY start.sh /start.sh
 
-# Normalize Windows line endings and remove UTF-8 BOM
+# Normalize line endings
 RUN python3 -c "p='/start.sh'; b=open(p,'rb').read(); b=b.removeprefix(b'\xef\xbb\xbf').replace(b'\r\n',b'\n').replace(b'\r',b'\n'); open(p,'wb').write(b)" \
     && chmod 755 /start.sh
 
-USER root
+USER sandbox
 WORKDIR /home/sandbox/workspace
 
 EXPOSE 10000
 
-# Explicitly run the script using Bash
 CMD ["bash", "/start.sh"]
