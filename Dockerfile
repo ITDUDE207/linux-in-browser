@@ -38,6 +38,7 @@ RUN apt-get update && apt-get install -y \
     jq \
     tree \
     file \
+    hollywood \
     openssh-client \
     && rm -rf /var/lib/apt/lists/*
 
